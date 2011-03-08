@@ -37,7 +37,11 @@ THE SOFTWARE.
 #include "bitmap.h"
 #include "simpobj.h"
 
-#include <m2033core/model_serializer.h>
+#include <m2033core/model.h>
+#include <m2033core/mesh.h>
+#include <m2033core/skeleton.h>
+#include <m2033core/reader.h>
+#include <m2033core/file_system.h>
 
 #include <string>
 #include <list>
