@@ -23,44 +23,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ******************************************************************************/
 
-#ifndef __M2033_MODELSERIALIZER_H__
-#define __M2033_MODELSERIALIZER_H__
+#ifndef __M2033_FILE_SYSTEM_H__
+#define __M2033_FILE_SYSTEM_H__
 
-#include "model.h"
 #include "prerequisites.h"
 
 namespace m2033
 {
-	class model_serializer
+	class file_system
 	{
 	public:
-		inline model_serializer() {}
-		inline ~model_serializer() {}
-
-		enum ChunkIds
+		enum
 		{
-			UNUSED_CHUNK_ID = 0x01,
-			TEXTURE_NAME_CHUNK_ID = 0x02,
-			STATIC_VERTEX_CHUNK_ID = 0x03,
-			DYNAMIC_VERTEX_CHUNK_ID = 0x05,
-			MODEL_CHUNK_ID = 0x09,
-			BONES_CHUNK_ID = 0x0D,
-			MESH_NAMES_CHUNK_ID = 0x10,
-			SKELETON_NAME_CHUNK_ID = 0x14
+			ROOT,
+			MESHES,
+			TEXTURES,
 		};
 
-		bool read_model_file( const std::string &file, model &m );
-		bool read_mesh_file( const std::string &file, model &m );
-		bool read_skeleton_file( const std::string &file, skeleton &s );
+		reader open_reader( const std::string& name );
 
-		void read_mesh(  int type, reader &r, mesh &m  );
-		void read_meshes( int type, reader &r, model::meshes &meshes );
+		inline void set_root_dir( const std::string& root ) { root_ = root; }
+		inline const std::string& get_root_dir() { return root_; }
+
+		bool set_root_from_fname( const std::string& file );
+		std::string get_full_path( int path_id, const std::string& filename );
 
 	private:
-		typedef std::list<std::string> string_list;
-
-		void split_string( const std::string& string, char splitter, string_list& result );
+		static std::string root_;
 	};
 }
 
-#endif // __M2033_MODELSERIALIZER_H__
+#endif // __M2033_FILE_SYSTEM_H__
