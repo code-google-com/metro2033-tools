@@ -38,19 +38,16 @@ enum
 
 int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *iface, BOOL suppressPrompts )
 {
-	m2033::model_serializer serializer;
 	m2033::model model;
 	m2033::mesh m;
 	bool res = 0;
+	m2033::reader r;
+	m2033::file_system fs;
 
-	if( strstr( name, ".mesh" ) != 0 )
-	{
-		res = serializer.read_mesh_file( name, model );
-	}
-	else if( strstr( name, ".model" ) != 0 )
-	{
-		res = serializer.read_model_file( name, model );
-	}
+	fs.set_root_from_fname( name );
+
+	r = fs.open_reader( name );
+	res = model.load( r );
 	if( !res )
 	{
 		return IMPEXP_FAIL;
@@ -60,22 +57,23 @@ int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *ifac
 	{
 		TriObject *object = CreateNewTriObject();
 		Mesh& mesh = object->GetMesh();
-		m = model.get_mesh( i );
+		m2033::mesh_ptr p = model.get_mesh( i );
 
-		set_mesh( mesh, m );
+		set_mesh( mesh, p );
 
 		ImpNode *node = ii->CreateNode();
 		node->Reference( object );
 		node->SetName( m.get_name().c_str() );
 
-		create_material( node->GetINode(), m.get_texture_name() );
+		create_material( node->GetINode(), p->get_texture_name() );
 
 		ii->AddNodeToScene( node );
 	}
 
 	if( model.get_type() == m2033::mesh::DYNAMIC_MESH )
 	{
-		build_skeleton( model.get_skeleton() );
+		m2033::skeleton_ptr p = model.get_skeleton();
+		build_skeleton( p );
 	}
 
 	iface->ForceCompleteRedraw();
@@ -83,11 +81,11 @@ int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *ifac
 	return IMPEXP_SUCCESS;
 }
 
-void model_import::set_mesh( Mesh &m1, m2033::mesh &m2 )
+void model_import::set_mesh( Mesh &m1, m2033::mesh_ptr &m2 )
 {
-	m2033::mesh::vertices v = m2.get_vertices();
-	m2033::mesh::indices idx = m2.get_indices();
-	m2033::mesh::texcoords tc = m2.get_tex_coords();
+	m2033::mesh::vertices v = m2->get_vertices();
+	m2033::mesh::indices idx = m2->get_indices();
+	m2033::mesh::texcoords tc = m2->get_tex_coords();
 
 	m1.setNumVerts( v.size() );
 	m1.setNumTVerts( tc.size() );
@@ -162,7 +160,7 @@ Modifier* model_import::create_skin_modifier( INode* node )
 	return mod;
 }
 
-void model_import::build_skeleton( m2033::skeleton &s )
+void model_import::build_skeleton( m2033::skeleton_ptr s )
 {
 	Matrix3 m;
 	Quat q;
@@ -172,14 +170,17 @@ void model_import::build_skeleton( m2033::skeleton &s )
 	Point3 color;
 	Interface* iface;
 
+	if( s.is_null() )
+		return;
+
 	iface = GetCOREInterface();
 
-	for( unsigned i = 0; i < s.get_num_bones(); i++ )
+	for( unsigned i = 0; i < s->get_num_bones(); i++ )
 	{
 		m.IdentityMatrix();
-		q.SetEuler( s.get_bone( i ).rot.x, -s.get_bone( i ).rot.z, s.get_bone( i ).rot.y );
+		q.SetEuler( s->get_bone( i ).rot.x, -s->get_bone( i ).rot.z, s->get_bone( i ).rot.y );
 		m.SetRotate( q );
-		m.Translate( Point3( s.get_bone( i ).pos.x, -s.get_bone( i ).pos.z, s.get_bone( i ).pos.y ) );
+		m.Translate( Point3( s->get_bone( i ).pos.x, -s->get_bone( i ).pos.z, s->get_bone( i ).pos.y ) );
 
 		color = GetUIColor(COLOR_BONES);
 
@@ -187,27 +188,27 @@ void model_import::build_skeleton( m2033::skeleton &s )
 
 		node = iface->CreateObjectNode( obj );
 		node->SetWireColor(RGB(int(color.x*255.0f), int(color.y*255.0f), int(color.z*255.0f) ));
-		node->SetName( (char*) s.get_bone( i ).name.c_str() );
+		node->SetName( (char*) s->get_bone( i ).name.c_str() );
 		node->SetNodeTM( 0, m );
 		node->SetBoneNodeOnOff( TRUE, 0 );
 		node->SetRenderable( FALSE );
 
-		bones_[s.get_bone( i ).name] = node;
+		bones_[s->get_bone( i ).name] = node;
 	}
 
-	for( unsigned i = 0; i < s.get_num_bones(); i++ )
+	for( unsigned i = 0; i < s->get_num_bones(); i++ )
 	{
-		node = get_bone_node( s.get_bone( i ).name.c_str() );
-		parent = get_bone_node( s.get_bone( i ).parent.c_str() );
+		node = get_bone_node( s->get_bone( i ).name.c_str() );
+		parent = get_bone_node( s->get_bone( i ).parent.c_str() );
 		if( parent != 0 )
 		{
 			parent->AttachChild( node, 0 );
 		}
 	}
 
-	for( unsigned i = 0; i < s.get_num_bones(); i++ )
+	for( unsigned i = 0; i < s->get_num_bones(); i++ )
 	{
-		update_bone_length( s.get_bone( i ) );
+		update_bone_length( s->get_bone( i ) );
 	}
 }
 

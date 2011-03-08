@@ -47,6 +47,8 @@ namespace m2033
 		inline mesh();
 		inline ~mesh();
 
+		void load( reader &r, int type );
+
 		void init( int type, void *vertices,
 			unsigned num_vertices, void *indices, unsigned num_indices );
 		void clear();

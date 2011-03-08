@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 #include "mesh.h"
 #include "math.h"
+#include "reader.h"
 
 using namespace m2033;
 
@@ -116,4 +117,49 @@ void mesh::clear()
 	indices_.clear();
 	texname_.clear();
 	name_.clear();
+}
+
+void mesh::load( reader &r, int type )
+{
+	void *vb, *ib;
+	int size, vnum, inum, i = 0;
+	char n;
+
+	// read vertices
+	if( type == mesh::DYNAMIC_MESH )
+	{
+		r.open_chunk( DYNAMIC_VERTEX_CHUNK_ID );
+
+		// skip unused data
+		r.read_data( &n, 1 );
+		size = n * 61;
+		r.advance( size );
+
+		// calculate vertices size
+		r.read_data( &vnum, 4 );
+		size = vnum * 32;
+	}
+	else
+	{
+		r.open_chunk( STATIC_VERTEX_CHUNK_ID );
+		size = r.chunk_size() - 8;
+		r.advance( 4 );
+		r.read_data( &vnum, 4 );
+	}
+	vb = malloc( size );
+	r.read_data( vb, size );
+	r.close_chunk();
+
+	// read indices
+	r.open_chunk();
+	size = r.chunk_size() - 4;
+	r.read_data( &inum, 4 );
+	ib = malloc( size );
+	r.read_data( ib, size );
+	r.close_chunk();
+
+	init( type, vb, vnum, ib, inum );
+
+	free( vb);
+	free( ib );
 }

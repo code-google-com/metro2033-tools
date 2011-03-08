@@ -263,6 +263,14 @@
 	</References>
 	<Files>
 		<File
+			RelativePath=".\file_system.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\file_system.h"
+			>
+		</File>
+		<File
 			RelativePath=".\math.cpp"
 			>
 		</File>
@@ -279,15 +287,11 @@
 			>
 		</File>
 		<File
+			RelativePath=".\model.cpp"
+			>
+		</File>
+		<File
 			RelativePath=".\model.h"
-			>
-		</File>
-		<File
-			RelativePath=".\model_serializer.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\model_serializer.h"
 			>
 		</File>
 		<File
@@ -300,6 +304,14 @@
 		</File>
 		<File
 			RelativePath=".\reader.h"
+			>
+		</File>
+		<File
+			RelativePath=".\shared_ptr.h"
+			>
+		</File>
+		<File
+			RelativePath=".\skeleton.cpp"
 			>
 		</File>
 		<File

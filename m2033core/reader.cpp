@@ -47,37 +47,21 @@ static inline void* to_ptr( unsigned offset )
 	return (void*) offset;
 }
 
-bool reader::open( const std::string& name )
+reader::reader( const std::string name, void *data, size_t size )
 {
-	FILE* file;
-	void* data;
-	size_t size;
 	char drive[255];
 	char dir[255];
 	char filename[255];
 	char suffix[255];
 
-	close();
+	root_ = shared_ptr<chunk>( new chunk );
 
-	file = fopen( name.c_str(), "rb" );
-	if( !file )
-	{
-		return 0;
-	}
+	root_->data = data;
+	root_->size = size;
+	root_->ptr = 0;
+	root_->parent = 0;
 
-	fseek( file, 0, SEEK_END );
-	size = ftell( file );
-	fseek( file, 0, SEEK_SET );
-	data = malloc( size );
-	fread( data, 1, size, file );
-	fclose( file );
-
-	root_.data = data;
-	root_.size = size;
-	root_.ptr = 0;
-	root_.parent = 0;
-
-	current_ = &root_;
+	current_ = root_.ptr();
 
 	_splitpath( name.c_str(), drive, dir, filename, suffix );
 
@@ -87,16 +71,15 @@ bool reader::open( const std::string& name )
 	suffix_ = suffix;
 
 	is_opened = true;
-
-	return 1;
 }
 
-void reader::close()
+void reader::clear()
 {
 	if( is_opened )
 	{
 		chunks_.clear();
-		free( root_.data );
+		if( root_.ref_count() == 1 )
+			free( root_->data );
 		current_ = 0;
 		is_opened = false;
 		path_.clear();
