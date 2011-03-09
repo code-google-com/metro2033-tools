@@ -53,7 +53,7 @@ namespace m2033
 	template <class T>
 	inline void shared_ptr<T>::release()
 	{
-		if( ref_count_ )
+		if( ref_count_ != 0 )
 		{
 			if( --(*ref_count_) == 0 )
 			{

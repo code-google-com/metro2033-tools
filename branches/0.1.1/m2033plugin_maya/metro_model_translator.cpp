@@ -33,7 +33,6 @@ MStatus  metro_model_translator::reader(const MFileObject &file, const MString &
 	m2033::file_system fs;
 	m2033::reader r;
 	m2033::model model;
-	m2033::mesh_ptr mesh;
 	bool res = MStatus::kFailure;
 
 	fs.set_root_from_fname( file.expandedFullName().asChar() );
@@ -44,8 +43,13 @@ MStatus  metro_model_translator::reader(const MFileObject &file, const MString &
 		return MStatus::kFailure;
 	}
 
-	for( unsigned i = 0; i < model.get_num_meshes(); i++ ) {
-		mesh = model.get_mesh( i );
+	return read( model );
+}
+
+MStatus	metro_model_translator::read( m2033::model &m )
+{
+	for( unsigned i = 0; i < m.get_num_meshes(); i++ ) {
+		m2033::mesh_ptr mesh = m.get_mesh( i );
 		if( !create_shape( mesh ) ) {
 			return MStatus::kFailure;
 		}

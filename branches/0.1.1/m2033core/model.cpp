@@ -1,6 +1,8 @@
 #include "model.h"
 #include "file_system.h"
 #include "reader.h"
+#include "mesh.h"
+#include "skeleton.h"
 
 using namespace m2033;
 
@@ -130,4 +132,14 @@ mesh_vector model::load_meshes( reader &r, int type )
 	while( r.elapsed() > 64 );
 
 	return meshes;
+}
+
+void model::add_mesh( mesh &m )
+{
+	meshes_.push_back( mesh_ptr( new mesh( m ) ) );
+}
+
+void model::set_skeleton( const skeleton &s )
+{
+	skeleton_ = skeleton_ptr( new skeleton( s ) );
 }

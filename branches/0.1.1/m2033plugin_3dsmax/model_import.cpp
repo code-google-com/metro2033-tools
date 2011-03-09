@@ -49,30 +49,32 @@ int model_import::DoImport( const TCHAR *name, ImpInterface *ii, Interface *ifac
 	r = fs.open_reader( name );
 	res = model.load( r );
 	if( !res )
-	{
 		return IMPEXP_FAIL;
-	}
 
-	for( unsigned i = 0; i < model.get_num_meshes(); i++ )
+	return import( model );
+}
+
+int model_import::import( m2033::model &m )
+{
+	Interface *iface = GetCOREInterface();
+
+	for( unsigned i = 0; i < m.get_num_meshes(); i++ )
 	{
 		TriObject *object = CreateNewTriObject();
 		Mesh& mesh = object->GetMesh();
-		m2033::mesh_ptr p = model.get_mesh( i );
+		m2033::mesh_ptr p = m.get_mesh( i );
 
 		set_mesh( mesh, p );
 
-		ImpNode *node = ii->CreateNode();
-		node->Reference( object );
-		node->SetName( m.get_name().c_str() );
+		INode *node = iface->CreateObjectNode( object );
+		node->SetName( (char*)p->get_name().c_str() );
 
-		create_material( node->GetINode(), p->get_texture_name() );
-
-		ii->AddNodeToScene( node );
+		create_material( node, p->get_texture_name() );
 	}
 
-	if( model.get_type() == m2033::mesh::DYNAMIC_MESH )
+	if( m.get_type() == m2033::model::DYNAMIC )
 	{
-		m2033::skeleton_ptr p = model.get_skeleton();
+		m2033::skeleton_ptr p = m.get_skeleton();
 		build_skeleton( p );
 	}
 

@@ -68,6 +68,7 @@ reader::reader( const std::string name, void *data, size_t size )
 	path_ = std::string( drive ) + std::string( dir );
 	name_ = filename;
 	filename_ = std::string( filename ) + std::string( suffix );
+	fullname_ = name;
 	suffix_ = suffix;
 
 	is_opened = true;
@@ -120,6 +121,12 @@ void reader::close_chunk()
 	current_ = c->parent;
 	advance( c->size + 8 );
 	chunks_.pop_back();
+}
+
+void* reader::data()
+{
+	unsigned p = to_offset( chunk_data() ) + ptr();
+	return to_ptr( p );
 }
 
 void reader::read_data( void* data, size_t size )

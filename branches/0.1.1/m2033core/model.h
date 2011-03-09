@@ -27,8 +27,6 @@ THE SOFTWARE.
 #define __M2033_MODEL_H__
 
 #include "prerequisites.h"
-#include "skeleton.h"
-#include "mesh.h"
 
 namespace m2033
 {
@@ -47,8 +45,8 @@ namespace m2033
 		bool load( reader &r );
 		inline void clear();
 
-		inline void add_mesh( mesh &m );
-		inline void set_skeleton( const skeleton &s );
+		void add_mesh( mesh &m );
+		void set_skeleton( const skeleton &s );
 		inline void set_type( int type );
 
 		inline mesh_ptr get_mesh( unsigned idx ) const;
@@ -68,12 +66,10 @@ namespace m2033
 	};
 
 	inline model::model() : type_(-1) {}
-	inline model::~model() {}
+	inline model::~model() { clear(); }
 
 	inline void model::clear() { meshes_.clear(); skeleton_.release(); type_ = -1; }
 
-	inline void model::add_mesh( mesh &m ) { meshes_.push_back( mesh_ptr( new mesh( m ) ) ); }
-	inline void model::set_skeleton( const skeleton &s ) { skeleton_ = skeleton_ptr( new skeleton( s ) ); }
 	inline void model::set_type( int type ) { type_ = type; }
 
 	inline mesh_ptr model::get_mesh( unsigned idx ) const { assert( idx < meshes_.size() ); return meshes_[idx]; }
