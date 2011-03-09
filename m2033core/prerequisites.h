@@ -49,7 +49,11 @@ namespace m2033
 		MODEL_CHUNK_ID = 0x09,
 		BONES_CHUNK_ID = 0x0D,
 		MESH_NAMES_CHUNK_ID = 0x10,
-		SKELETON_NAME_CHUNK_ID = 0x14
+		SKELETON_NAME_CHUNK_ID = 0x14,
+		LEVEL_PARTS_CHUNK_ID = 0x03,
+		LEVEL_TEXTURES_CHUNK_ID = 0x02,
+		LEVEL_VB_CHUNK_ID = 0x09,
+		LEVEL_IB_CHUNK_ID = 0x0A
 	};
 
 	class vec3;
@@ -60,6 +64,7 @@ namespace m2033
 	class reader;
 
 	typedef std::list<std::string> string_list;
+	typedef std::vector<std::string> string_vector;
 	typedef shared_ptr<model> model_ptr;
 	typedef shared_ptr<skeleton> skeleton_ptr;
 	typedef shared_ptr<mesh> mesh_ptr;

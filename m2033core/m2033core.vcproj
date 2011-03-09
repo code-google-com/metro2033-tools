@@ -271,6 +271,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\level.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\level.h"
+			>
+		</File>
+		<File
 			RelativePath=".\math.cpp"
 			>
 		</File>

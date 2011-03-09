@@ -43,6 +43,7 @@ public:
 
 	inline const std::string& get_path();
 	inline const std::string& get_file_name();
+	inline const std::string& get_full_name();
 	inline const std::string& get_name();
 	inline const std::string& get_suffix();
 
@@ -53,6 +54,8 @@ public:
 	inline unsigned chunk_id();
 	inline unsigned chunk_size();
 	inline void* chunk_data();
+
+	void* data();
 
 	void read_data( void* data, size_t size );
 	int read_string( char* buffer );
@@ -86,6 +89,7 @@ private:
 	chunk_stack			chunks_;
 
 	std::string			path_;
+	std::string			fullname_;
 	std::string			filename_;
 	std::string			name_;
 	std::string			suffix_;
@@ -97,6 +101,7 @@ inline bool reader::is_empty() { return !is_opened; }
 
 inline const std::string& reader::get_path() { return path_; }
 inline const std::string& reader::get_file_name() { return filename_; }
+inline const std::string& reader::get_full_name() { return fullname_; }
 inline const std::string& reader::get_name() { return name_; }
 inline const std::string& reader::get_suffix() { return suffix_; }
 

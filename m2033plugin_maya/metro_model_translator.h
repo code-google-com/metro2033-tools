@@ -37,6 +37,7 @@ namespace m2033_maya
 		static void* creator() { return new metro_model_translator(); }
 
 		MStatus  reader(const MFileObject &file, const MString &optionsString, FileAccessMode mode);
+		MStatus	read( m2033::model &m );
 
 		MStatus create_shape( const m2033::mesh_ptr m );
 		MObject create_material( const std::string &texture, MStatus *status = NULL );

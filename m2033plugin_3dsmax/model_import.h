@@ -28,31 +28,13 @@ THE SOFTWARE.
 
 namespace m2033_3dsmax
 {
-class reader;
-class model;
-
 class model_import : public SceneImport
 {
 public:
 	int				ExtCount() { return 3; }
-
-	const TCHAR* Ext( int i )
-	{
-		switch( i )
-		{
-		case 0:
-			return "mesh";
-		case 1:
-			return "model";
-		case 2:
-			return "geom_pc";
-		}
-
-		return 0;
-	}
-
-	const TCHAR*	LongDesc() { return "Metro2033 Model"; }
-	const TCHAR*	ShortDesc() { return "Metro2033 Model file"; }
+	const TCHAR* Ext( int i ) { return i ? "mesh" : "model"; }
+	const TCHAR*	LongDesc() { return "Metro2033 Model Importer"; }
+	const TCHAR*	ShortDesc() { return "Metro2033 Model Importer"; }
 	const TCHAR*	AuthorName() { return "Ivan Shishkin"; }
 	const TCHAR*	CopyrightMessage() { return "Copyright (C) 2010 Ivan Shishkin <codingdude@gmail.com>"; }
 	const TCHAR*	OtherMessage1() { return ""; }
@@ -64,6 +46,7 @@ public:
 	void ShowAbout( HWND hwnd );
 
 	int DoImport( const TCHAR *name, ImpInterface *ii, Interface *i, BOOL suppressPrompts );
+	int import( m2033::model &m );
 
 private:
 	typedef std::map<std::string, Mtl*> mtl_map;
